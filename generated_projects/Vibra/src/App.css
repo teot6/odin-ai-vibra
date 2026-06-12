@@ -1003,7 +1003,9 @@ button:disabled {
 
 .match-card-stage {
   display: grid;
-  max-width: 30rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  max-width: none;
   margin: 0 auto;
 }
 
@@ -1993,6 +1995,101 @@ td:last-child {
   }
 }
 
+@media (max-width: 39.99rem) {
+  .main {
+    padding-bottom: calc(7.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .nav-list {
+    position: fixed;
+    right: var(--space-3);
+    bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+    left: var(--space-3);
+    z-index: 20;
+    justify-content: space-between;
+    gap: var(--space-1);
+    padding: var(--space-2);
+    overflow-x: auto;
+    background: rgba(16, 14, 24, 0.94);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.46);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    scrollbar-width: none;
+  }
+
+  .nav-list::-webkit-scrollbar,
+  .horizontal-card-row::-webkit-scrollbar,
+  .answer-options::-webkit-scrollbar,
+  .prompt-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-list li {
+    flex: 1 0 auto;
+  }
+
+  .nav-link {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .answer-options,
+  .prompt-chips,
+  .horizontal-card-row {
+    display: flex;
+    gap: var(--space-3);
+    width: 100%;
+    max-width: 100%;
+    padding: var(--space-1) var(--space-1) var(--space-3);
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: var(--space-1);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    touch-action: pan-x;
+  }
+
+  .answer-options button {
+    flex: 0 0 min(78vw, 17rem);
+    min-height: 64px;
+    scroll-snap-align: start;
+  }
+
+  .prompt-chips {
+    flex-wrap: nowrap;
+  }
+
+  .prompt-chips button {
+    flex: 0 0 auto;
+    max-width: 78vw;
+    scroll-snap-align: start;
+    white-space: normal;
+  }
+
+  .match-card-stage {
+    margin-inline: calc(var(--space-5) * -1);
+    padding-inline: var(--space-5);
+  }
+
+  .match-card-stage .match-card {
+    flex: 0 0 min(86vw, 25rem);
+    scroll-snap-align: center;
+  }
+
+  .vip-benefits.horizontal-card-row {
+    margin-inline: calc(var(--space-5) * -1);
+    padding-inline: var(--space-5);
+  }
+
+  .vip-benefits.horizontal-card-row li {
+    flex: 0 0 min(78vw, 19rem);
+    min-height: 8rem;
+    scroll-snap-align: start;
+  }
+}
+
 @media (min-width: 64rem) {
   .header {
     padding-inline: var(--space-8);
@@ -2078,21 +2175,11 @@ td:last-child {
 
   .reset-session-button::before {
     font-size: var(--text-xs);
-    content: "Reset";
+    content: "Нулирай";
   }
 
   .nav-list {
-    justify-content: flex-start;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .nav-list::-webkit-scrollbar {
-    display: none;
-  }
-
-  .nav-list li {
-    flex: 0 0 auto;
+    justify-content: space-between;
   }
 
   .page-section {

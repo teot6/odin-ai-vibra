@@ -5,6 +5,9 @@ self-discovery. It demonstrates an adult onboarding flow, a scored personality
 test, compatibility-based match interactions, AI-style conversation practice,
 and free/VIP plan selection in a polished frontend experience.
 
+Live static demo:
+https://odin-ai-vibra-c7p6-80n0u20ir-teot6s-projects.vercel.app
+
 The React frontend can run by itself as a static demo. An optional FastAPI
 prototype in the repository root adds local JSON session persistence and
 validation, but it is not a production backend.
@@ -12,10 +15,13 @@ validation, but it is not a production backend.
 ## MVP Features
 
 - 18+ age confirmation gate
-- Five-step scored personality test and connection profile
+- Bulgarian user-facing interface with premium, natural product language
+- Fifteen-question scored personality test and deeper connection profile
 - Sample compatibility cards with like, maybe, and pass actions
 - AI-style chat practice with suggested prompts and mock replies
 - Free and VIP plan selection preview
+- Mobile bottom navigation with safe-area spacing
+- Touch-friendly horizontal card rows with CSS scroll snapping
 - Session restoration when the local FastAPI prototype is available
 - Validation contracts for demo session updates
 - Automatic offline fallback when the backend is unavailable
@@ -23,6 +29,12 @@ validation, but it is not a production backend.
 
 All profiles, compatibility results, chat replies, pricing, and plan actions are
 demonstration content.
+
+The expanded test covers communication, emotional expression, conflict,
+social energy, attachment, relationship goals, boundaries, trust, humor,
+lifestyle rhythm, introvert/extrovert balance, romantic pace, honesty,
+support style, and long-term compatibility. All fifteen answers contribute to
+the frontend-only scoring signals.
 
 ## Tech Stack
 
@@ -127,6 +139,11 @@ With the API running, demo choices are written to `vibra_sessions.json` at the
 repository root and can be restored using the anonymous session ID stored in
 the browser. Without the API, the frontend remains interactive but changes are
 not durably persisted by the backend.
+
+The API accepts up to 15 personality answers and step indexes from 0 through
+14. Existing sessions containing the original five valid answers remain
+compatible: normalization preserves them and the frontend resumes with the
+remaining questions. The schema version remains `vibra-mvp-v1`.
 
 To point the frontend at another API during development, create an uncommitted
 `.env.local` file:

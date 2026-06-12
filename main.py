@@ -279,7 +279,7 @@ class CodeAuditRequest(BaseModel):
 # ============================================================
 
 VIBRA_SCHEMA_VERSION = "vibra-mvp-v1"
-VIBRA_MAX_PERSONALITY_ANSWERS = 5
+VIBRA_MAX_PERSONALITY_ANSWERS = 15
 VIBRA_MAX_MATCH_HISTORY = 25
 VIBRA_MAX_CHAT_HISTORY = 50
 VIBRA_MAX_CHAT_MESSAGE_LENGTH = 240
@@ -290,6 +290,16 @@ VIBRA_PERSONALITY_DIMENSIONS = {
     "Attachment style",
     "Social energy",
     "Relationship goals",
+    "Conflict handling",
+    "Boundaries",
+    "Trust",
+    "Humor and playfulness",
+    "Lifestyle rhythm",
+    "Introvert-extrovert balance",
+    "Romantic pace",
+    "Honesty and directness",
+    "Support style",
+    "Long-term compatibility",
 }
 VIBRA_PERSONALITY_OPTIONS = {
     "I talk it through",
@@ -307,6 +317,36 @@ VIBRA_PERSONALITY_OPTIONS = {
     "A committed relationship",
     "A meaningful connection",
     "I am exploring",
+    "Address it early",
+    "Cool down then talk",
+    "Seek common ground",
+    "State boundaries clearly",
+    "Discuss them gently",
+    "Adjust as trust grows",
+    "Consistent actions",
+    "Open conversations",
+    "Time and reliability",
+    "Playful every day",
+    "Warm shared humor",
+    "Spontaneous adventures",
+    "Planned and steady",
+    "Flexible and spontaneous",
+    "Structured with surprises",
+    "People recharge me",
+    "Solitude recharges me",
+    "I need both",
+    "Slow and intentional",
+    "Natural and responsive",
+    "Fast when it feels right",
+    "Tell me directly",
+    "Be kind but clear",
+    "Choose the right moment",
+    "Listen and stay close",
+    "Help me solve it",
+    "Give me space then check in",
+    "Shared values",
+    "Growth as a team",
+    "Respect for differences",
 }
 VIBRA_SCORE_KEYS = {
     "openness",
@@ -385,7 +425,7 @@ def validate_vibra_session_id(value):
 
 def validate_vibra_answers(answers):
     if len(answers) > VIBRA_MAX_PERSONALITY_ANSWERS:
-        raise ValueError("personality answers cannot contain more than five items.")
+        raise ValueError("personality answers cannot contain more than fifteen items.")
     if not set(answers).issubset(VIBRA_PERSONALITY_DIMENSIONS):
         raise ValueError("personality answers contain an unsupported dimension.")
     if not set(answers.values()).issubset(VIBRA_PERSONALITY_OPTIONS):
@@ -418,15 +458,15 @@ class PersonalityResultPayload(BaseModel):
     @validator("answers")
     def validate_complete_answers(cls, answers):
         if len(answers) != VIBRA_MAX_PERSONALITY_ANSWERS:
-            raise ValueError("a personality result requires exactly five answers.")
+            raise ValueError("a personality result requires exactly fifteen answers.")
         return answers
 
     @validator("scores")
     def validate_scores(cls, scores):
         if set(scores) != VIBRA_SCORE_KEYS:
             raise ValueError("scores must include openness, expressiveness, socialEnergy, commitment, and adaptability.")
-        if any(isinstance(value, bool) or value < 0 or value > 15 for value in scores.values()):
-            raise ValueError("each personality score must be an integer between 0 and 15.")
+        if any(isinstance(value, bool) or value < 0 or value > 45 for value in scores.values()):
+            raise ValueError("each personality score must be an integer between 0 and 45.")
         return scores
 
 
@@ -470,7 +510,7 @@ class AgeConfirmationPayload(BaseModel):
 class PersonalityProgressPayload(BaseModel):
     session_id: str = Field(min_length=16, max_length=80)
     answers: dict[str, str] = Field(default_factory=dict)
-    step_index: int = Field(ge=0, le=4)
+    step_index: int = Field(ge=0, le=14)
 
     _validate_session_id = validator("session_id", allow_reuse=True)(validate_vibra_session_id)
     _validate_answers = validator("answers", allow_reuse=True)(validate_vibra_answers)
@@ -571,7 +611,7 @@ def normalize_vibra_session(session):
         stored_step = int(normalized.get("personality_step", len(normalized["personality_answers"])))
     except (TypeError, ValueError):
         stored_step = len(normalized["personality_answers"])
-    normalized["personality_step"] = min(max(stored_step, 0), 4)
+    normalized["personality_step"] = min(max(stored_step, 0), 14)
     normalized.setdefault("personality_result", None)
 
     if not isinstance(normalized.get("match_choices", []), list):
@@ -753,7 +793,7 @@ def save_vibra_personality_result(payload: PersonalityResultPayload):
         session_id,
         lambda session: session.update({
             "personality_answers": data["answers"],
-            "personality_step": 4,
+            "personality_step": 14,
             "personality_result": data,
         }),
     )["personality_result"]
