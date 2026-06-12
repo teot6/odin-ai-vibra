@@ -5,12 +5,24 @@ self-discovery. It demonstrates an adult onboarding flow, a scored personality
 test, compatibility-based match interactions, AI-style conversation practice,
 and free/VIP plan selection in a polished frontend experience.
 
-Live static demo:
-https://odin-ai-vibra-c7p6-ixwln0mdx-teot6s-projects.vercel.app
-
 The React frontend can run by itself as a static demo. An optional FastAPI
 prototype in the repository root adds local JSON session persistence and
 validation, but it is not a production backend.
+
+## Live Demo Status
+
+Live portfolio demo:
+https://odin-ai-vibra-c7p6-ixwln0mdx-teot6s-projects.vercel.app
+
+The deployed Vercel version is a static frontend and intentionally runs in
+offline demo mode. Its personality test, sample matches, mock AI conversation,
+profile-photo status, verification preview, and VIP selection work without a
+deployed API.
+
+The FastAPI backend remains a local-only prototype. Payments, ID verification,
+production AI and moderation, authentication, and database-backed user storage
+are not active production features. The live demo does not store real user
+profiles or sensitive personal data online.
 
 ## MVP Features
 

@@ -628,7 +628,7 @@ const App = () => {
   const confirmAge = () => {
     setAgeConfirmed(true);
     persistDemoState('/api/vibra/age-confirmation', { confirmed: true });
-    navigateTo('personality-preview');
+    navigateTo('profile-verification');
   };
 
   const answerQuestion = (answer) => {
@@ -787,6 +787,14 @@ const App = () => {
     window.localStorage.removeItem(PROFILE_PHOTO_STATUS_KEY);
   };
 
+  const nextDemoAction = !ageConfirmed
+    ? { label: 'Потвърди 18+ и започни', section: 'welcome-gate' }
+    : !profilePhotoAdded
+      ? { label: 'Завърши демо профила', section: 'profile-verification' }
+      : !testComplete
+        ? { label: 'Направи личностния тест', section: 'personality-preview' }
+        : { label: 'Разгледай своите съвпадения', section: 'match-preview' };
+
   return (
     <div className="app-shell">
       <header className="header">
@@ -857,20 +865,23 @@ const App = () => {
         <section id="welcome-gate" className="welcome-gate" aria-labelledby="welcome-title" tabIndex="-1">
           <article className="welcome-card">
             <div className="welcome-copy">
-              <p className="eyebrow">Добре дошъл/а във Vibra</p>
-              <h1 id="welcome-title">Опознавай по-дълбоко. Разбирай себе си по-добре.</h1>
+              <p className="eyebrow">Vibra · Портфолио демо</p>
+              <h1 id="welcome-title">По-смислени срещи започват с по-добро себепознание.</h1>
               <p className="welcome-value">
-                Откривай съвпадения според характера си, упражнявай смислени разговори с AI
-                и създавай връзки около ценностите, които са важни за теб.
+                Опознай стила си на свързване, разгледай подбрани профили и упражни
+                първия разговор в сигурна демо среда.
               </p>
+              <ol className="journey-preview" aria-label="Стъпки в демото на Vibra">
+                <li>18+</li><li>Профил</li><li>Тест</li><li>Съвпадения</li><li>AI чат</li><li>VIP</li>
+              </ol>
             </div>
             <div className="age-panel" aria-label="Потвърждение на възрастта">
               <span className="age-badge" aria-hidden="true">18+</span>
               <div>
-                <h2>Само за пълнолетни</h2>
+                <h2>Потвърди, че си на 18+</h2>
                 <p>
-                  С влизането във Vibra потвърждаваш, че си навършил/а 18 години
-                  и ще използваш общността отговорно.
+                  Vibra е концепция за запознанства само за пълнолетни. Това е демо
+                  потвърждение, а не реална проверка на възрастта.
                 </p>
               </div>
               <div className="welcome-actions">
@@ -880,7 +891,7 @@ const App = () => {
                   aria-label="Потвърди възрастта и влез във Vibra"
                   onClick={confirmAge}
                 >
-                  {ageConfirmed ? 'Възрастта е потвърдена' : 'Навършил/а съм 18 - Вход'}
+                  {ageConfirmed ? '18+ е потвърдено' : 'Навършил/а съм 18'}
                 </button>
                 <button
                   className="btn btn-secondary"
@@ -888,18 +899,18 @@ const App = () => {
                   aria-label="Научи как Vibra подкрепя безопасността"
                   onClick={() => navigateTo('features-section')}
                 >
-                  Виж как работи
+                  Виж принципите за безопасност
                 </button>
               </div>
               {ageConfirmed && (
                 <p className="confirmed-state" role="status">
                   <span aria-hidden="true">OK</span>
-                  Възрастта е потвърдена за това демо.
+                  Готово. Следва създаването на демо профил.
                 </p>
               )}
               <p className="safety-note">
                 <span aria-hidden="true">OK</span>
-                Верифицирани профили, поверителност и инструменти за уважително общуване.
+                Демо среда без реални профили, плащания или онлайн съхранение на лични данни.
               </p>
             </div>
           </article>
@@ -907,11 +918,11 @@ const App = () => {
 
         <section id="profile-verification" className="page-section verification-section" aria-labelledby="verification-title" tabIndex="-1">
           <div className="verification-intro">
-            <p className="eyebrow">Демо профил и доверие</p>
-            <h2 id="verification-title">Подготви профила си безопасно</h2>
+            <p className="eyebrow">Стъпка 2 · Демо профил</p>
+            <h2 id="verification-title">Добави основата на своя профил</h2>
             <p>
-              За завършен демо профил е необходима една профилна снимка. Файлът не се
-              качва към сървър, не се прочита и не се съхранява от Vibra.
+              Отбележи профилна снимка и провери статуса си. Нищо не се качва онлайн
+              и избраният файл не се съхранява.
             </p>
           </div>
 
@@ -927,8 +938,8 @@ const App = () => {
                   {profilePhotoAdded ? 'Профилната снимка е добавена' : 'Профилната снимка липсва'}
                 </p>
                 <p>
-                  Това е локална демо отметка. Избраното изображение не се визуализира,
-                  не се изпраща и не остава в браузъра.
+                  Изборът активира само локален статус. Снимката не се отваря,
+                  визуализира или изпраща.
                 </p>
                 <div className="photo-actions">
                   <label className="demo-file-label">
@@ -949,15 +960,20 @@ const App = () => {
                   )}
                 </div>
                 <p id="photo-privacy-note" className="privacy-inline-note">
-                  Не използвай реална лична или чувствителна снимка в това демо.
+                  За портфолио преглед използвай тестов файл, не лична снимка.
                 </p>
+                {profilePhotoAdded && (
+                  <button className="profile-next-button" type="button" onClick={() => navigateTo('personality-preview')}>
+                    Продължи към личностния тест
+                  </button>
+                )}
               </div>
             </article>
 
             <ol className="verification-steps" aria-label="Демо стъпки за верификация">
               <li className={profilePhotoAdded ? 'verification-complete' : ''}>
                 <span aria-hidden="true">01</span>
-                <div><strong>Профилна снимка</strong><small>Задължителна локална демо отметка</small></div>
+                <div><strong>Профилна снимка</strong><small>Локален статус за завършен профил</small></div>
               </li>
               <li className={ageConfirmed ? 'verification-complete' : ''}>
                 <span aria-hidden="true">02</span>
@@ -965,7 +981,7 @@ const App = () => {
               </li>
               <li>
                 <span aria-hidden="true">03</span>
-                <div><strong>Бъдеща външна проверка</strong><small>KYC/age-verification доставчик за продукционна версия</small></div>
+                <div><strong>Продукционна проверка</strong><small>В бъдеще: лицензиран външен доставчик</small></div>
               </li>
             </ol>
           </div>
@@ -973,28 +989,19 @@ const App = () => {
           <div className="verification-safety-note" role="note">
             <strong>Не качвай реална лична карта в демо версията.</strong>
             <p>
-              Vibra не иска и не съхранява документи за самоличност, банкови данни или
-              биометрични данни и не прави AI оценка на възраст по лице.
+              Тук няма качване на документи, лицево разпознаване или биометрична
+              оценка на възрастта. Реална проверка би изисквала външен лицензиран доставчик.
             </p>
           </div>
         </section>
 
-        <section id="landing-page" className="page-section" aria-labelledby="landing-title" tabIndex="-1">
-          <p className="eyebrow">Vibra преживяването</p>
-          <h2 id="landing-title" className="landing-title">Добре дошъл/а във Vibra!</h2>
-          <p>Открий подходящ човек според характера и ценностите си.</p>
-          <button className="btn" type="button" onClick={() => navigateTo('personality-preview')}>
-            Разгледай Vibra
-          </button>
-        </section>
-
         <section id="personality-preview" className="page-section personality-preview" aria-labelledby="personality-title" tabIndex="-1">
           <div className="test-intro">
-            <p className="eyebrow">Опознай характера си</p>
-            <h2 id="personality-title">По-ясна картина за начина, по който се свързваш</h2>
+            <p className="eyebrow">Стъпка 3 · Личностен тест</p>
+            <h2 id="personality-title">Открий как създаваш близост</h2>
             <p>
-              Разгледай моделите зад отношенията си с по-задълбочен тест,
-              създаден да направи съвместимостта по-лична и смислена.
+              15 кратки въпроса превръщат предпочитанията ти в по-ясен профил
+              за комуникация, доверие и съвместимост.
             </p>
             <div className="test-progress">
               <div className="progress-copy">
@@ -1024,8 +1031,8 @@ const App = () => {
                 {String(Math.min(testStep + 1, personalityQuestions.length)).padStart(2, '0')}
               </span>
               <div>
-                <p className="dimension-kicker">Какво ще изследваш</p>
-                <h3 id="dimensions-title">Твоят профил на свързване</h3>
+                <p className="dimension-kicker">15 измерения</p>
+                <h3 id="dimensions-title">Твоят стил на свързване</h3>
               </div>
             </div>
             <ul className="dimension-list" aria-label="Измерения в личностния тест">
@@ -1073,8 +1080,8 @@ const App = () => {
                 </dl>
                 <p className="result-explanation">{personalityResult.compatibilityDescription}</p>
                 <p className="result-match-note">
-                  Vibra използва тези сигнали, за да подреди примерни профили с допълващи се
-                  навици за общуване, социален ритъм и намерения за връзка.
+                В демото тези сигнали подреждат примерни профили според общуване,
+                социален ритъм и намерения.
                 </p>
               </div>
             )}
@@ -1082,8 +1089,7 @@ const App = () => {
             <div className="match-benefit">
               <span className="benefit-icon" aria-hidden="true">+</span>
               <p>
-                Резултатите ти задълбочават анализа на Vibra и помагат да се откроят
-                верифицирани хора с близки ценности, енергия и цели.
+                Отговорите ти оформят демо резултат и персонализират примерните съвпадения.
               </p>
             </div>
             <button
@@ -1102,13 +1108,13 @@ const App = () => {
           <div className="match-section-heading">
             <div>
               <p className="eyebrow">
-                {personalityResult ? `Настроено за: ${personalityResult.compatibilityProfile}` : 'Подбрано според твоята енергия'}
+                {personalityResult ? `Стъпка 4 · ${personalityResult.compatibilityProfile}` : 'Стъпка 4 · Демо съвпадения'}
               </p>
-              <h2 id="match-preview-title">Запознай се с най-силните си съвпадения</h2>
+              <h2 id="match-preview-title">Профили с повече контекст</h2>
               <p>
                 {personalityResult
-                  ? `${personalityResult.compatibilityDescription} Примерните препоръки вече отразяват завършения ти тест.`
-                  : 'Оценките комбинират личностни модели, предпочитания за общуване и цели във връзката, за да започнеш с повече смислен контекст.'}
+                  ? 'Примерните профили вече са подредени според завършения ти тест. Използвай оценките като начало на разговор, не като гаранция.'
+                  : 'Завърши теста, за да персонализираш подредбата. Всички профили и оценки тук са измислени за демото.'}
               </p>
             </div>
             <span className="verified-note"><span aria-hidden="true">OK</span> Само верифицирани пълнолетни</span>
@@ -1120,6 +1126,7 @@ const App = () => {
             <span><strong>{matchChoices.skipped.length}</strong> пропуснати</span>
             <span>Профил {currentMatch + 1} от {matches.length}</span>
           </div>
+          <p className="scroll-helper">Плъзни хоризонтално, за да разгледаш профилите.</p>
 
           <div className="match-card-stage horizontal-card-row" aria-label="Примерни профили за съвпадение" aria-live="polite">
             {matches.map((profile) => (
@@ -1156,16 +1163,16 @@ const App = () => {
 
         <section id="ai-chat-preview" className="page-section ai-chat-preview" aria-labelledby="ai-chat-title" tabIndex="-1">
           <div className="ai-chat-intro">
-            <p className="eyebrow">Практика без напрежение</p>
-            <h2 id="ai-chat-title">Намери точните думи преди момента</h2>
+            <p className="eyebrow">Стъпка 5 · AI практика</p>
+            <h2 id="ai-chat-title">Подготви разговор, който звучи като теб</h2>
             <p>
-              Vibra AI ти помага да упражниш първи съобщения, да разбереш оценката за
-              съвместимост и да се подготвиш за смислени реални разговори.
+              Изпробвай първо съобщение или разгледай идея за съвместимост.
+              Отговорите са предварително подготвени за това демо.
             </p>
             <ul className="ai-benefits" aria-label="Как Vibra AI може да помогне">
-              <li>Създай начало, което звучи естествено за теб</li>
-              <li>Разгледай общите черти и възможните различия</li>
-              <li>Упражни уважително и уверено общуване</li>
+              <li>Създай естествено начало</li>
+              <li>Виж общите черти и различията</li>
+              <li>Упражни уважителен тон</li>
             </ul>
             <button className="btn btn-primary ai-chat-cta" type="button" aria-label="Фокусирай полето за Vibra AI чат" onClick={() => document.getElementById('chat-input')?.focus()}>
               Изпробвай AI чата
@@ -1218,19 +1225,19 @@ const App = () => {
 
             <p className="ai-safety-note">
               <span aria-hidden="true">i</span>
-              AI чатът е за практика и размисъл. Той не заменя честното общуване
-              с реален човек и взаимното съгласие. Не въвеждай лична или чувствителна информация.
+              Това е статичен AI mock без реален модел или модерация. Съобщенията не се
+              изпращат до реални потребители. Не въвеждай лична или чувствителна информация.
             </p>
           </article>
         </section>
 
         <section id="vip-preview" className="page-section vip-preview" aria-labelledby="vip-title" tabIndex="-1">
           <div className="vip-intro">
-            <p className="eyebrow">Vibra VIP</p>
-            <h2 id="vip-title">Повече яснота. Повече видимост. В твоето темпо.</h2>
+            <p className="eyebrow">Стъпка 6 · Vibra VIP</p>
+            <h2 id="vip-title">Повече възможности, без натиск</h2>
             <p>
-              Отключи по-задълбочени инструменти за съвместимост и деликатни начини
-              да изпъкнеш, без да губиш взаимния избор във всяко общуване.
+              Прегледай как би изглеждал премиум планът. Изборът е локален,
+              а основното демо остава напълно достъпно.
             </p>
             <div className="vip-trust-row" aria-label="Основни предимства на VIP">
               <span><span aria-hidden="true">OK</span> Отказ по всяко време</span>
@@ -1241,8 +1248,8 @@ const App = () => {
           <article className={`vip-plan${vipSelection === 'vip' ? ' vip-plan-selected' : ''}`} aria-labelledby="vip-plan-title">
             <div className="vip-plan-top">
               <div>
-                <span className="vip-plan-label">Най-пълното изживяване</span>
-                <h3 id="vip-plan-title">VIP членство</h3>
+                <span className="vip-plan-label">Демо абонамент</span>
+                <h3 id="vip-plan-title">Vibra VIP</h3>
               </div>
               <span className="vip-mark" aria-hidden="true">V</span>
             </div>
@@ -1291,9 +1298,8 @@ const App = () => {
             <div className="payment-demo-note" role="note">
               <strong>Плащанията не са активни в демо версията.</strong>
               <p>
-                В бъдеща продукционна версия плащанията трябва да се обработват чрез
-                доверен доставчик като Stripe или друг лицензиран платежен оператор.
-                Vibra не иска банкови данни и не съхранява платежна информация.
+                Реална версия би използвала Stripe или друг лицензиран оператор.
+                Vibra не иска и не съхранява банкови или картови данни.
               </p>
             </div>
             <p className="vip-optional-note">
@@ -1306,13 +1312,13 @@ const App = () => {
 
         <section id="features-section" className="page-section" aria-labelledby="features-title" tabIndex="-1">
           <div className="supporting-section-heading">
-            <p className="eyebrow">Създадено за по-добри връзки</p>
-            <h2 id="features-title">По-сигурно и осъзнато изживяване</h2>
-            <p>Всяка част от Vibra добавя контекст, яснота и увереност към модерните запознанства.</p>
+            <p className="eyebrow">Доверие по дизайн</p>
+            <h2 id="features-title">Ясни граници още от демото</h2>
+            <p>Vibra поставя пълнолетието, поверителността и уважителното общуване на първо място.</p>
           </div>
           <ul>
             <li><article className="feature-card"><span className="feature-icon" aria-hidden="true">18+</span>Потвърждение за пълнолетие и отговорно използване</article></li>
-            <li><article className="feature-card"><span className="feature-icon" aria-hidden="true">ID</span>Мобилен интерфейс с примерни верифицирани профили</article></li>
+            <li><article className="feature-card"><span className="feature-icon" aria-hidden="true">ID</span>Примерна верификация без качване на реални документи</article></li>
             <li><article className="feature-card"><span className="feature-icon" aria-hidden="true">Д/Н</span>Ясни избори: интерес, може би или пропускане</article></li>
             <li><article className="feature-card"><span className="feature-icon" aria-hidden="true">NAV</span>Навигация между начало, тест, съвпадения, AI чат и VIP</article></li>
           </ul>
@@ -1320,9 +1326,9 @@ const App = () => {
 
         <section id="compatibility-tests-section" className="page-section" aria-labelledby="tests-title" tabIndex="-1">
           <div className="supporting-section-heading">
-            <p className="eyebrow">Отвъд първоначалната химия</p>
-            <h2 id="tests-title">Тестове за съвместимост</h2>
-            <p>Разгледай чертите, очакванията и ценностите, които оформят ежедневието на една връзка.</p>
+            <p className="eyebrow">Отвъд първото впечатление</p>
+            <h2 id="tests-title">Сигнали за по-добра съвместимост</h2>
+            <p>Характер, ценности и ежедневен ритъм дават контекст, без да решават вместо теб.</p>
           </div>
           <ul>
             {['Големите пет личностни черти', 'Честност и скромност HEXACO', 'Стил на привързаност', 'Очаквания за връзката', 'Подход към конфликтите', 'Ценности', 'Интимност', 'Ангажираност', 'Комуникация', 'Начин на живот и граници'].map((test) => <li key={test}>{test}</li>)}
@@ -1331,9 +1337,9 @@ const App = () => {
 
         <section id="compatibility-score-card-section" className="page-section" aria-labelledby="score-title" tabIndex="-1">
           <div className="supporting-section-heading">
-            <p className="eyebrow">Яснота с един поглед</p>
-            <h2 id="score-title">Карта на съвместимостта</h2>
-            <p>Използвай оценките като контекст за разговор, а не като заместител на истинското опознаване.</p>
+            <p className="eyebrow">Контекст, не присъда</p>
+            <h2 id="score-title">Съвместимост с ясни граници</h2>
+            <p>Оценката насочва разговора. Истинската връзка се изгражда с време, избор и взаимност.</p>
           </div>
           <table aria-label="Примерни оценки за съвместимост">
             <tbody>
@@ -1345,14 +1351,22 @@ const App = () => {
 
         <section id="closing-cta" className="page-section closing-cta" aria-labelledby="closing-title" tabIndex="-1">
           <article className="closing-cta-content">
-            <p className="eyebrow">Следващата връзка започва от теб</p>
-            <h2 id="closing-title">Готов/а ли си за нещо повече от първо впечатление?</h2>
-            <p>Открий своя стил на свързване, разгледай примерни съвпадения и упражнявай разговори в собствено темпо.</p>
+            <p className="eyebrow">Продължи демо пътя</p>
+            <h2 id="closing-title">Една ясна следваща стъпка.</h2>
+            <p>
+              {testComplete
+                ? 'Профилът ти за съвместимост е готов. Върни се към примерните профили и изпробвай различен избор.'
+                : 'Завърши следващата стъпка, за да видиш как Vibra превръща предпочитанията в по-смислен контекст.'}
+            </p>
             <div className="closing-actions">
-              <button className="btn btn-primary" type="button" aria-label="Започни с личностния тест на Vibra" onClick={() => navigateTo('personality-preview')}>Започни с характера си</button>
-              <button className="btn btn-secondary" type="button" aria-label="Разгледай примерни съвпадения във Vibra" onClick={() => navigateTo('match-preview')}>Разгледай съвпадения</button>
+              <button className="btn btn-primary" type="button" onClick={() => navigateTo(nextDemoAction.section)}>
+                {nextDemoAction.label}
+              </button>
+              <button className="btn btn-secondary" type="button" onClick={() => navigateTo('ai-chat-preview')}>
+                Изпробвай AI разговора
+              </button>
             </div>
-            <p className="closing-trust"><span aria-hidden="true">18+</span>Само за пълнолетни. Уважението и съгласието са на първо място.</p>
+            <p className="closing-trust"><span aria-hidden="true">DEMO</span>Статично портфолио демо без реални потребители, плащания или онлайн база данни.</p>
           </article>
         </section>
       </main>
