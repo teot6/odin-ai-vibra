@@ -6,7 +6,7 @@ test, compatibility-based match interactions, AI-style conversation practice,
 and free/VIP plan selection in a polished frontend experience.
 
 Live static demo:
-https://odin-ai-vibra-c7p6-80n0u20ir-teot6s-projects.vercel.app
+https://odin-ai-vibra-c7p6-ixwln0mdx-teot6s-projects.vercel.app
 
 The React frontend can run by itself as a static demo. An optional FastAPI
 prototype in the repository root adds local JSON session persistence and
@@ -19,7 +19,10 @@ validation, but it is not a production backend.
 - Fifteen-question scored personality test and deeper connection profile
 - Sample compatibility cards with like, maybe, and pass actions
 - AI-style chat practice with suggested prompts and mock replies
-- Free and VIP plan selection preview
+- Free and 5 EUR/month VIP plan selection preview with local mock-upgrade state
+- Required profile-photo demo step that stores only a local completion flag
+- Profile verification preview for photo, 18+ confirmation, and future external KYC
+- Abstract generated demo avatars for matches and a CSS Vibra AI assistant avatar
 - Mobile bottom navigation with safe-area spacing
 - Touch-friendly horizontal card rows with CSS scroll snapping
 - Session restoration when the local FastAPI prototype is available
@@ -29,6 +32,32 @@ validation, but it is not a production backend.
 
 All profiles, compatibility results, chat replies, pricing, and plan actions are
 demonstration content.
+
+## Monetization and Verification Demo
+
+The VIP price is displayed as a **5 EUR/month demo price**. Selecting VIP only
+changes local demo state and the existing demo plan selection; it does not
+start checkout, create a subscription, charge a card, or communicate with a
+bank. Payment data is never requested or stored.
+
+A production version should use Stripe or another trusted, licensed payment
+processor. Vibra should receive only the minimum payment status and entitlement
+information needed from that provider, not raw card or bank-account details.
+
+Profile completion includes a mock image picker. Selecting a file sets the
+local `vibra_demo_profile_photo_added` flag, then immediately clears the input.
+The frontend does not read, preview, upload, or retain the image bytes. Resetting
+the demo clears the flag.
+
+The verification section is informational UI only:
+
+- one local profile-photo completion flag
+- the existing self-declared 18+ confirmation
+- a future external KYC/age-verification step
+
+There is no ID-card upload, document storage, facial recognition, biometric age
+estimation, or real identity verification. Real documents and sensitive images
+must never be entered into this demo.
 
 The expanded test covers communication, emotional expression, conflict,
 social energy, attachment, relationship goals, boundaries, trust, humor,
@@ -188,7 +217,11 @@ serverless functions, multiple instances, real users, or sensitive data.
 - **No real user data:** All displayed profiles and match information are
   fictional. Do not enter personal, confidential, or sensitive information.
 - **No real payments:** VIP selection is a visual demo. There is no checkout,
-  billing provider, subscription, or charge.
+  billing provider, subscription, or charge. The 5 EUR amount is a demo price.
+- **No real photo upload:** The file control records only a local completion
+  flag. It does not read, display, upload, or store the selected image.
+- **No real identity verification:** The verification steps do not accept ID
+  cards or biometric data and do not estimate age from a face.
 - **No real matching:** Compatibility scores and profiles are sample product
   logic, not validated recommendations or live users.
 - **No real AI or moderation:** Chat replies are mock coaching responses. There
@@ -218,6 +251,7 @@ root-level ignore rules for `generated_projects/Vibra_backup_*/`,
 ## Roadmap
 
 - Production authentication and verified adult account flows
+- Licensed KYC/age-verification provider with legal and privacy review
 - Privacy-aware profiles, preferences, and consent controls
 - Validated personality and compatibility methodology
 - Secure database-backed persistence and migrations
@@ -225,6 +259,7 @@ root-level ignore rules for `generated_projects/Vibra_backup_*/`,
 - Moderated real-time messaging, reporting, blocking, and safety operations
 - Production AI with privacy controls, evaluations, and human escalation
 - Payment-provider integration and subscription entitlement handling
+- Trusted payment processor integration without storing card or bank data
 - Rate limiting, monitoring, audit logs, backups, and incident response
 - Expanded accessibility testing, localization, analytics, and legal review
 

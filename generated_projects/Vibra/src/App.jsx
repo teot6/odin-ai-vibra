@@ -2,6 +2,26 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 const API_BASE_URL = import.meta.env.VITE_VIBRA_API_URL || 'http://127.0.0.1:8000';
 const SESSION_STORAGE_KEY = 'vibra_session_id';
+const PROFILE_PHOTO_STATUS_KEY = 'vibra_demo_profile_photo_added';
+
+const buildDemoAvatar = (startColor, endColor, accentColor) => {
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop stop-color="${startColor}"/>
+          <stop offset="1" stop-color="${endColor}"/>
+        </linearGradient>
+      </defs>
+      <rect width="480" height="360" rx="36" fill="url(#bg)"/>
+      <circle cx="240" cy="130" r="70" fill="rgba(255,255,255,.88)"/>
+      <path d="M105 360c16-96 69-142 135-142s119 46 135 142" fill="rgba(255,255,255,.82)"/>
+      <circle cx="392" cy="68" r="42" fill="${accentColor}" opacity=".72"/>
+      <circle cx="78" cy="282" r="58" fill="${accentColor}" opacity=".34"/>
+    </svg>
+  `;
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+};
 
 class VibraApiError extends Error {
   constructor(message, { code = 'request_failed', status = 0, details = [], isTimeout = false } = {}) {
@@ -309,6 +329,8 @@ const matches = [
     initials: 'MA',
     score: 94,
     visual: 'match-visual-rose',
+    avatar: buildDemoAvatar('#7f2458', '#ff638d', '#ffd166'),
+    avatarAlt: 'Илюстративен демо аватар на Мая, създаден от абстрактни форми',
     summary: 'Топла, любопитна и тихо авантюристична.',
     tags: ['Емоционално открита', 'Дълбока комуникация', 'Дългосрочна нагласа'],
     vibe: 'Неделни пазари, внимателни гласови съобщения, джаз на живо и разговори, които неусетно продължават до 2 през нощта.'
@@ -319,6 +341,8 @@ const matches = [
     initials: 'EL',
     score: 91,
     visual: 'match-visual-violet',
+    avatar: buildDemoAvatar('#342568', '#9c7cff', '#ff8fc0'),
+    avatarAlt: 'Илюстративен демо аватар на Ели, създаден от абстрактни форми',
     summary: 'Земна, изразителна и социално балансирана личност.',
     tags: ['Сигурна привързаност', 'Игрива енергия', 'Ясна комуникация'],
     vibe: 'Готвене за приятели, книги за дизайн, бавни пътувания и търсене на най-доброто кафе във всеки квартал.'
@@ -329,6 +353,8 @@ const matches = [
     initials: 'NO',
     score: 88,
     visual: 'match-visual-blue',
+    avatar: buildDemoAvatar('#124d68', '#46a9bd', '#b9f6d7'),
+    avatarAlt: 'Илюстративен демо аватар на Ноа, създаден от абстрактни форми',
     summary: 'Творческа, директна и винаги любопитна.',
     tags: ['Висока емпатия', 'Независим дух', 'Фокус върху развитието'],
     vibe: 'Следобеди в галерии, спонтанни разходки, добри плейлисти и честни разговори с място за смях.'
@@ -385,6 +411,9 @@ const App = () => {
   const [chatInput, setChatInput] = useState('');
   const [chatMessages, setChatMessages] = useState(initialMessages);
   const [vipSelection, setVipSelection] = useState('free');
+  const [profilePhotoAdded, setProfilePhotoAdded] = useState(
+    () => window.localStorage.getItem(PROFILE_PHOTO_STATUS_KEY) === 'true'
+  );
   const [sessionId, setSessionId] = useState('');
   const [syncStatus, setSyncStatus] = useState('saving');
   const [syncMessage, setSyncMessage] = useState('');
@@ -637,6 +666,8 @@ const App = () => {
     setChatInput('');
     setChatMessages(initialMessages);
     setVipSelection('free');
+    setProfilePhotoAdded(false);
+    window.localStorage.removeItem(PROFILE_PHOTO_STATUS_KEY);
   };
 
   const resetDemoSession = async () => {
@@ -736,6 +767,24 @@ const App = () => {
   const selectVip = (selection) => {
     setVipSelection(selection);
     persistDemoState('/api/vibra/plan-selection', { plan: selection });
+  };
+
+  const handleDemoPhotoSelection = (event) => {
+    const hasSelectedFile = event.target.files?.length > 0;
+    setProfilePhotoAdded(hasSelectedFile);
+
+    if (hasSelectedFile) {
+      window.localStorage.setItem(PROFILE_PHOTO_STATUS_KEY, 'true');
+    } else {
+      window.localStorage.removeItem(PROFILE_PHOTO_STATUS_KEY);
+    }
+
+    event.target.value = '';
+  };
+
+  const removeDemoPhoto = () => {
+    setProfilePhotoAdded(false);
+    window.localStorage.removeItem(PROFILE_PHOTO_STATUS_KEY);
   };
 
   return (
@@ -854,6 +903,80 @@ const App = () => {
               </p>
             </div>
           </article>
+        </section>
+
+        <section id="profile-verification" className="page-section verification-section" aria-labelledby="verification-title" tabIndex="-1">
+          <div className="verification-intro">
+            <p className="eyebrow">Демо профил и доверие</p>
+            <h2 id="verification-title">Подготви профила си безопасно</h2>
+            <p>
+              За завършен демо профил е необходима една профилна снимка. Файлът не се
+              качва към сървър, не се прочита и не се съхранява от Vibra.
+            </p>
+          </div>
+
+          <div className="verification-grid">
+            <article className={`photo-requirement-card${profilePhotoAdded ? ' verification-complete' : ''}`}>
+              <div className="demo-photo-preview" role="img" aria-label="Локален демо заместител за профилна снимка">
+                <span aria-hidden="true">{profilePhotoAdded ? 'OK' : '+'}</span>
+              </div>
+              <div className="photo-requirement-copy">
+                <p className="verification-step">Стъпка 1 от 3</p>
+                <h3>Добави профилна снимка</h3>
+                <p className={`photo-status${profilePhotoAdded ? ' photo-status-added' : ''}`} role="status">
+                  {profilePhotoAdded ? 'Профилната снимка е добавена' : 'Профилната снимка липсва'}
+                </p>
+                <p>
+                  Това е локална демо отметка. Избраното изображение не се визуализира,
+                  не се изпраща и не остава в браузъра.
+                </p>
+                <div className="photo-actions">
+                  <label className="demo-file-label">
+                    {profilePhotoAdded ? 'Избери друга демо снимка' : 'Избери демо снимка'}
+                    <input
+                      id="demo-profile-photo"
+                      className="visually-hidden-file"
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      onChange={handleDemoPhotoSelection}
+                      aria-describedby="photo-privacy-note"
+                    />
+                  </label>
+                  {profilePhotoAdded && (
+                    <button className="remove-photo-button" type="button" onClick={removeDemoPhoto}>
+                      Премахни отметката
+                    </button>
+                  )}
+                </div>
+                <p id="photo-privacy-note" className="privacy-inline-note">
+                  Не използвай реална лична или чувствителна снимка в това демо.
+                </p>
+              </div>
+            </article>
+
+            <ol className="verification-steps" aria-label="Демо стъпки за верификация">
+              <li className={profilePhotoAdded ? 'verification-complete' : ''}>
+                <span aria-hidden="true">01</span>
+                <div><strong>Профилна снимка</strong><small>Задължителна локална демо отметка</small></div>
+              </li>
+              <li className={ageConfirmed ? 'verification-complete' : ''}>
+                <span aria-hidden="true">02</span>
+                <div><strong>Потвърждение 18+</strong><small>{ageConfirmed ? 'Потвърдено в демото' : 'Очаква потвърждение от началния екран'}</small></div>
+              </li>
+              <li>
+                <span aria-hidden="true">03</span>
+                <div><strong>Бъдеща външна проверка</strong><small>KYC/age-verification доставчик за продукционна версия</small></div>
+              </li>
+            </ol>
+          </div>
+
+          <div className="verification-safety-note" role="note">
+            <strong>Не качвай реална лична карта в демо версията.</strong>
+            <p>
+              Vibra не иска и не съхранява документи за самоличност, банкови данни или
+              биометрични данни и не прави AI оценка на възраст по лице.
+            </p>
+          </div>
         </section>
 
         <section id="landing-page" className="page-section" aria-labelledby="landing-title" tabIndex="-1">
@@ -1001,8 +1124,9 @@ const App = () => {
           <div className="match-card-stage horizontal-card-row" aria-label="Примерни профили за съвпадение" aria-live="polite">
             {matches.map((profile) => (
               <article className="match-card match-card-current" key={profile.name}>
-                <div className={`match-visual ${profile.visual}`} aria-hidden="true">
-                  <span>{profile.initials}</span>
+                <div className={`match-visual ${profile.visual}`}>
+                  <img src={profile.avatar} alt={profile.avatarAlt} />
+                  <span className="match-initials" aria-hidden="true">{profile.initials}</span>
                   <strong>{profile.score}% съвпадение</strong>
                 </div>
                 <div className="match-content">
@@ -1050,8 +1174,10 @@ const App = () => {
 
           <article className="chat-window" aria-labelledby="chat-window-title">
             <header className="chat-header">
-              <span className="ai-avatar" aria-hidden="true">V</span>
-              <div><h3 id="chat-window-title">Vibra AI</h3><p>Треньор за разговори</p></div>
+              <span className="ai-avatar" role="img" aria-label="Приветлив демо аватар на Vibra AI асистент">
+                <span className="ai-face" aria-hidden="true"><i></i><i></i><b></b></span>
+              </span>
+              <div><h3 id="chat-window-title">Vibra AI асистент</h3><p>Треньор за разговори</p></div>
               <span className="ai-status"><span aria-hidden="true"></span> Готов</span>
             </header>
 
@@ -1120,7 +1246,9 @@ const App = () => {
               </div>
               <span className="vip-mark" aria-hidden="true">V</span>
             </div>
-            <div className="vip-price" aria-label="Примерна VIP цена"><strong>$14</strong><span>.99<br />на месец</span></div>
+            <div className="vip-price" aria-label="Демо VIP цена 5 евро на месец">
+              <strong>5€</strong><span>на месец<br />демо цена</span>
+            </div>
             <ul className="vip-benefits horizontal-card-row" aria-label="Предимства на Vibra VIP">
               {[
                 ['Задълбочена съвместимост', 'Виж по-фини сходства и динамика в общуването.'],
@@ -1157,9 +1285,17 @@ const App = () => {
             </div>
             <p className="vip-selection-status" role="status">
               {vipSelection === 'vip'
-                ? 'Избрано е VIP демо. Не е стартирано плащане.'
+                ? 'VIP демо е активирано локално. Не е стартирано плащане.'
                 : 'Избрано е безплатното изживяване. VIP остава по избор.'}
             </p>
+            <div className="payment-demo-note" role="note">
+              <strong>Плащанията не са активни в демо версията.</strong>
+              <p>
+                В бъдеща продукционна версия плащанията трябва да се обработват чрез
+                доверен доставчик като Stripe или друг лицензиран платежен оператор.
+                Vibra не иска банкови данни и не съхранява платежна информация.
+              </p>
+            </div>
             <p className="vip-optional-note">
               <span aria-hidden="true">i</span>
               VIP е напълно по избор. Безплатните потребители могат да завършат теста,
