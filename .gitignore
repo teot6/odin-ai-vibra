@@ -21,3 +21,8 @@ generated_projects/*_backup_*/
 # Logs
 *.log
 logs/
+
+# Old generated demo projects
+generated_projects/FitTrack Pro/
+generated_projects/calculator-app/
+generated_projects/simple-calculator/
