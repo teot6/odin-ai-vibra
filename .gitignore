@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+
+# Environment
+.env
+.env.*
+
+# Node
+node_modules/
+dist/
+
+# Local persistence / memory
+vibra_sessions.json
+odin_memory.json
+
+# Backups
+*_backup_*/
+generated_projects/*_backup_*/
+
+# Logs
+*.log
+logs/

@@ -1,0 +1,28 @@
+{
+  "name": "vibra",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "vite": "3.2.4"
+  },
+  "description": "Premium mobile-first MVP for verified, personality-led dating and self-discovery.",
+  "keywords": [
+    "dating",
+    "personality",
+    "compatibility",
+    "react",
+    "vite",
+    "mobile-first"
+  ],
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "vite": "^5.4.21"
+  }
+}
