@@ -11,15 +11,21 @@
     "react-dom": "18.2.0",
     "vite": "3.2.4"
   },
-  "description": "Premium mobile-first MVP for verified, personality-led dating and self-discovery.",
+  "description": "Bulgarian mobile-first dating MVP with personality scoring, interactive matches, mock AI coaching, and a local FastAPI prototype.",
   "keywords": [
     "dating",
     "personality",
     "compatibility",
+    "bulgarian",
+    "dating-mvp",
+    "fastapi",
+    "portfolio",
     "react",
+    "responsive-design",
     "vite",
     "mobile-first"
   ],
+  "homepage": "https://odin-ai-vibra-c7p6-ixwln0mdx-teot6s-projects.vercel.app",
   "private": true,
   "type": "module",
   "devDependencies": {
